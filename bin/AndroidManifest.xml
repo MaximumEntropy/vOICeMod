@@ -6,10 +6,11 @@
     <uses-sdk android:minSdkVersion="7" />
 	<uses-permission android:name="android.permission.CAMERA"/>
 	<uses-feature android:name="android.hardware.camera"/>
-	<uses-feature android:name="android.hardware.camera.autofocus"/>
+	 
+	<!--  <uses-feature android:name="android.hardware.camera.autofocus"/> -->
 
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
-        <activity android:name=".ImgProcessorActivity" android:label="@string/app_name" android:screenOrientation="sensor">
+        <activity android:name=".ImgProcessorActivity" android:label="@string/app_name" android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

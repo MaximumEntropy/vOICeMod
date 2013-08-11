@@ -12,7 +12,7 @@ public class PitchPlayer
     * PRIVATE DATA
     */
   
-   private AudioTrack mAudio;
+   public AudioTrack mAudio;
    private int mSampleCount;
   
    // some constants
@@ -54,14 +54,14 @@ public class PitchPlayer
            samples[i] = (byte)(f * 127);
        }
       
-       mAudio.write( samples, 0, mSampleCount );
+       mAudio.write(samples, 0, mSampleCount );
    }
   
   
    public void start()
    {
        mAudio.reloadStaticData();
-       mAudio.setLoopPoints( 0, mSampleCount, -1 );
+       mAudio.setLoopPoints(0, mSampleCount, -1);
        mAudio.play();
    }
   

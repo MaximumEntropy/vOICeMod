@@ -98,7 +98,7 @@ class DrawOnTop extends View {
         } // bin
     }
 
-    protected double musicify(double quantumdouble){
+    protected double music(double quantumdouble){
     	int quantum = (int)quantumdouble;
     	if (quantum == 0) return 261.0;
     	else if (quantum == 1) return 293.0;
@@ -132,10 +132,13 @@ class DrawOnTop extends View {
         	// Convert from YUV to RGB
         	decodeYUV420SPGrayscale(mRGBData, mYUVData, mImageWidth, mImageHeight);
         	//System.out.println(mRGBData[5]);
-        	frequency = musicify(imgAverage(mRGBData));
+        	frequency = music(imgAverage(mRGBData, 0));
         	//System.out.println(frequency);
         	System.out.println(frequency);
             mPlayer.setFrequency(frequency);
+            Random r = new Random();
+            int i1=r.nextInt(10);
+            mPlayer.mAudio.setStereoVolume(1,0);
             mPlayer.start();
         	// Draw bitmap
         	mBitmap.setPixels(mRGBData, 0, mImageWidth, 0, 0,         			mImageWidth, mImageHeight);
@@ -163,6 +166,29 @@ class DrawOnTop extends View {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+    		
+    		frequency = music(imgAverage(mRGBData, 1));
+    		System.out.println(frequency);
+            mPlayer.setFrequency(frequency);
+            mPlayer.mAudio.setStereoVolume(1,1);
+            mPlayer.start();
+            try {Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            frequency = music(imgAverage(mRGBData, 2));
+    		System.out.println(frequency);
+            mPlayer.setFrequency(frequency);
+            mPlayer.mAudio.setStereoVolume(1,1);
+            mPlayer.start();
+            try {Thread.sleep(200);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
         	// Calculate mean
         	double imageRedMean = 0, imageGreenMean = 0, imageBlueMean = 0;
         	double redHistogramSum = 0, greenHistogramSum = 0, blueHistogramSum = 0;
@@ -261,21 +287,49 @@ class DrawOnTop extends View {
         
         super.onDraw(canvas);
 }
-        public Double imgAverage(int mRGBData[])
+        public Double imgAverage(int mRGBData[], int side)
         {
         	int[][] newImage = new int[100][100];
         	int arrayNumber = 0;
         	double sum =0.0;
-        	for (int i=0; i<50;i++)
-        	{
-        		for (int j=0; j<50;j++)
-        		{
-        			arrayNumber = (mRGBData.length/2 -25) + j*3;
-        			newImage[i][j] = mRGBData[arrayNumber] >> 16 & 0xff;
-        			sum = sum + newImage[i][j]/16;
-        			//newImage[i-(5/11)*mImageWidth][j-(5/11)*mImageHeight] = mRGBData[i*mImageWidth+j];
-        			//System.out.println(mRGBData[i*mImageWidth+j]);
-        		}
+        	if (side == 1){
+	        	for (int i=0; i<50;i++)
+	        	{
+	        		for (int j=0; j<50;j++)
+	        		{
+	        			arrayNumber = (mRGBData.length/2 -25) + j*3;
+	        			newImage[i][j] = mRGBData[arrayNumber] >> 16 & 0xff;
+	        			sum = sum + newImage[i][j]/16;
+	        			//newImage[i-(5/11)*mImageWidth][j-(5/11)*mImageHeight] = mRGBData[i*mImageWidth+j];
+	        			//System.out.println(mRGBData[i*mImageWidth+j]);
+	        		}
+	        	}
+        	}
+        	else if (side == 0){
+        		for (int i=0; i<50;i++)
+	        	{
+	        		for (int j=0; j<50;j++)
+	        		{
+	        			arrayNumber = (mRGBData.length/4 -25) + j*3;
+	        			newImage[i][j] = mRGBData[arrayNumber] >> 16 & 0xff;
+	        			sum = sum + newImage[i][j]/16;
+	        			//newImage[i-(5/11)*mImageWidth][j-(5/11)*mImageHeight] = mRGBData[i*mImageWidth+j];
+	        			//System.out.println(mRGBData[i*mImageWidth+j]);
+	        		}
+	        	}
+        	}
+        	else if (side == 2){
+        		for (int i=0; i<50;i++)
+	        	{
+	        		for (int j=0; j<50;j++)
+	        		{
+	        			arrayNumber = ((mRGBData.length/4)*3 -25) + j*3;
+	        			newImage[i][j] = mRGBData[arrayNumber] >> 16 & 0xff;
+	        			sum = sum + newImage[i][j]/16;
+	        			//newImage[i-(5/11)*mImageWidth][j-(5/11)*mImageHeight] = mRGBData[i*mImageWidth+j];
+	        			//System.out.println(mRGBData[i*mImageWidth+j]);
+	        		}
+	        	}
         	}
         //System.out.println(mRGBData[10]);
         sum = sum/2500;
@@ -381,6 +435,8 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         try {
            mCamera.setPreviewDisplay(holder);
            
+           
+           
            // Preview callback used whenever new viewfinder frame is available
            mCamera.setPreviewCallback(new PreviewCallback() {
         	  public void onPreviewFrame(byte[] data, Camera camera)
@@ -392,6 +448,8 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         		  {
         			  // Initialize the draw-on-top companion
         			  Camera.Parameters params = camera.getParameters();
+        			  params.setAutoWhiteBalanceLock(true);
+        			  camera.setParameters(params);
         			  mDrawOnTop.mImageWidth = params.getPreviewSize().width;
         			  mDrawOnTop.mImageHeight = params.getPreviewSize().height;
         			  mDrawOnTop.mBitmap = Bitmap.createBitmap(mDrawOnTop.mImageWidth, 
