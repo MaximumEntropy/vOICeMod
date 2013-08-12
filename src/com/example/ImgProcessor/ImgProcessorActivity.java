@@ -24,7 +24,11 @@ public class ImgProcessorActivity extends Activity {
     /** Called when the activity is first created. */
 	private Preview mPreview;
 	private DrawOnTop mDrawOnTop;
-	
+	public void onDestroy(Bundle savedInstanceState)
+    {
+		PitchPlayer mPlayer = new PitchPlayer();
+		mPlayer.stop();
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
